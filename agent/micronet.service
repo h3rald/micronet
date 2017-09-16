@@ -5,7 +5,7 @@ After=network.target
 [Service]
 User=user
 ExecStart=/usr/local/bin/micropython /path/to/agent/micronet.py
-WorkingDir=/path/to/agent
+WorkingDirectory=/path/to/agent
 Restart=always
 
 [Install]

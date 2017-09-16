@@ -41,7 +41,7 @@ class Agent:
         if self.type == 'computer':
             self.data['os'] = self.getOsData()
         self.logger.notice("MicroNet Agent started on %s (%s)" % (self.id, self.type))
-        self.conn = MQTTConnector('system', connect=False)
+        self.conn = MQTTConnector(self.id)
         self.conn.set_last_will('micronet/devices/' + self.id + '/online', 'true')
         self.scheduler = Scheduler()
 
@@ -67,6 +67,6 @@ class Agent:
             sensor_output = SensorAsOutputThing(sensor)
             self.data['sensors'][k] = sensor.info
             sensor_output.connect(StdoutConnector(sensor.info))
-            sensor_output.connect(MQTTConnector(k, topic='micronet/devices/' + self.id + '/data/' + k))
+            sensor_output.connect(self.conn.writer(k))
             self.scheduler.schedule_periodic(sensor_output, v['freq'])
             self.logger.info("Sensor '{0}' sampling every {1}s".format(k, v['freq']))

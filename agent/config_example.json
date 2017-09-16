@@ -1,0 +1,13 @@
+{
+  "id": "hostname",
+  "username": "myusername",
+  "password": "mypassword",
+  "server": "example.com",
+  "port": 8883,
+  "type": "computer",
+  "model": "Raspberry Pi 3",
+  "sensors": {
+    "cpu": {"freq": 10},
+    "ram": {"freq": 10}
+  }
+}

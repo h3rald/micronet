@@ -1,7 +1,7 @@
 import sys
 import ujson
-from utils import *
 sys.path.append('vendor')
+from utils import *
 from thingflow import *
 
 from mqtt_connector import MQTTConnector

@@ -24,7 +24,7 @@ class Singleton(object):
 
 class Logger(Singleton):
     
-    LEVEL = 0
+    LEVEL = 3
 
     for arg in sys.argv:
         match = ure.search("--log:(\d)", arg)

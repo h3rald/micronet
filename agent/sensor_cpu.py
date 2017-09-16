@@ -28,7 +28,7 @@ class CpuSensor:
             id = id)
     
     def frequency_linux(self):
-        frequency = int(float(ure.search("CPU max MHz:\s+([0-9.]+)", cmd('lscpu | grep "CPU max MHz:"')).group(1)))
+        frequency = int(float(ure.search("CPU (max )?MHz:\s+([0-9.]+)", cmd('lscpu | grep "CPU \(max \)\?MHz:"')).group(2)))
         return "{0}MHz".format(frequency)
 
     def cores_linux(self):

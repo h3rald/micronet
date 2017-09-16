@@ -42,7 +42,7 @@ class Agent:
             self.data['os'] = self.getOsData()
         self.logger.notice("MicroNet Agent started on %s (%s)" % (self.id, self.type))
         self.conn = MQTTConnector(self.id)
-        self.conn.set_last_will('micronet/devices/' + self.id + '/online', 'true')
+        self.conn.set_last_will('micronet/devices/' + self.id + '/online', 'false')
         self.scheduler = Scheduler()
 
     def getOsData(self):
@@ -54,7 +54,7 @@ class Agent:
 
     def start(self):
         self.conn.connect()
-        self.conn.publish('micronet/devices/' + self.id + '/online', 'false', retain=True, qos=1)
+        self.conn.publish('micronet/devices/' + self.id + '/online', 'true', retain=True, qos=1)
         self.conn.publish('micronet/devices/' + self.id + '/info', ujson.dumps(self.data), retain=True, qos=1)
         self.scheduler.run_forever()
 

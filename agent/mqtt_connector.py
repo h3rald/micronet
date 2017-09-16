@@ -16,8 +16,8 @@ class MQTTConnectorWriter:
 
     def on_next(self, msg):
         self.logger.info("MQTT - Publishing to:", self.topic)
-        data = bytes(ujson.dumps(msg), 'utf-8')
-        self.client.publish(bytes(self.topic, 'utf-8'), data)
+        data = bytes(ujson.dumps(msg[2]), 'utf-8')
+        self.client.publish(bytes(self.topic, 'utf-8'), data, retain=True)
 
     def on_completed(self):
         self.logger.notice("MQTT - Completed.")

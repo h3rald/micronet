@@ -28,11 +28,11 @@ class CpuSensor:
             id = id)
     
     def frequency_linux(self):
-        frequency = int(ure.search("CPU MHz:\s+([0-9.]+)", cmd('lscpu | grep "CPU MHz:"')).group(1))
+        frequency = int(float(ure.search("CPU MHz:\s+([0-9.]+)", cmd('lscpu | grep "CPU MHz:"')).group(1)))
         return "{0}MHz".format(frequency)
 
     def cores_linux(self):
-        return ure.search("CPU(s):\s+(\d+)", cmd('lscpu | grep CPU\(s\):')).group(1)
+        return ure.search("CPU\(s\):\s+(\d+)", cmd('lscpu | grep CPU\(s\):')).group(1)
     
 
     def frequency_darwin(self):

@@ -13,7 +13,7 @@ class StdoutConnector:
         self.logger = Logger()
 
     def on_next(self, x):
-        self.logger.info("{0}: {1}{2}".format(self.info['label'], x[2], self.info['uom']))
+        self.logger.info("{0} ({1}): {2}{3}".format(self.info['label'], self.info['id'], x[2], self.info['uom']))
 
     def on_completed():
         self.logger.info("[stdout-connector] Completed.")
@@ -61,9 +61,11 @@ class Agent:
     def schedule(self):
         self.logger.info("Scheduling sensors...")
         for k, v in self.sensors.items():
-            module = __import__("sensor_" + k)
-            SensorClass = getattr(module, to_pascal_case(k + "_sensor"))
-            sensor = SensorClass()
+            id = k.split(':')[0]
+            module = __import__("sensor_" + id)
+            SensorClass = getattr(module, to_pascal_case(id + "_sensor"))
+            v['id'] = k
+            sensor = SensorClass(**v)
             sensor_output = SensorAsOutputThing(sensor)
             self.data['sensors'][k] = sensor.info
             sensor_output.connect(StdoutConnector(sensor.info))

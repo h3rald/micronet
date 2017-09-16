@@ -6,8 +6,18 @@
   "port": 8883,
   "type": "computer",
   "model": "Raspberry Pi 3",
+  "location": "Living Room",
   "sensors": {
-    "cpu": {"freq": 10},
-    "ram": {"freq": 10}
+    "cpu": {
+      "freq": 10
+    },
+    "ram": {
+      "freq": 10
+    },
+    "fs:dev-disk1": {
+      "freq": 60,
+      "mount": "/",
+      "device": "/dev/disk1"
+    }
   }
 }

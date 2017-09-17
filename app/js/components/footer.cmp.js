@@ -1,6 +1,6 @@
 import { ConfigService } from '../services/config.svc.js';
 import { MicronetService } from '../services/micronet.svc.js';
-import { UtilsService } from '../services/Utils.svc.js';
+import { UtilsService } from '../services/utils.svc.js';
 import { Mithril as m } from '../../vendor/js/mithril.js';
 
 export class FooterComponent {

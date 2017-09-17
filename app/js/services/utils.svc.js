@@ -9,6 +9,9 @@ export class UtilsService {
   }
 
   prop(obj, path){
+    if (!obj) {
+      return '';
+    }
     const props = path.split('.');
     let data = obj;
     for (let c=0; c<props.length; c++) {

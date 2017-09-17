@@ -12,6 +12,7 @@ export class MicronetService {
       this.onMessageArrived = this.onMessage;
       this.data = null;
       this.connected = false;
+      this.wasConnected = false;
       instance = this;
     }
     return instance;
@@ -60,13 +61,21 @@ export class MicronetService {
 
   onConnectionSuccess(data) {
     this.connected = true;
+    this.wasConnected = true;
     this.data = {};
     this.client.subscribe('micronet/#');
   }
 
   onConnectionFailure(data) {
     this.connected = false;
-    this.onError(data);
+    if (this.wasConnected) {
+      setTimeout(() => {
+        console.log('Reconnecting...');
+        this.connect(this.config.settings);
+      }, 5000)
+    } else {
+      this.onError(data);
+    }
   }
 
   onMessage(msg) {

@@ -109,7 +109,7 @@ export class DeviceComponent {
           title: m.trust(disk.diskLabel),
           body: [
             this.ui.properties({
-              Totsl: disk.total,
+              Total: disk.total,
               Used: disk.used,
               Available: disk.free
             })

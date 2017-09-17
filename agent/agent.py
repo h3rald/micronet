@@ -20,6 +20,7 @@ class StdoutConnector:
 
     def on_error(self, e):
         self.logger.info("[stdout-connector] Error:", e)
+        sys.exit()
 
 class Agent:
     

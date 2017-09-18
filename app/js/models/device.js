@@ -55,7 +55,7 @@ export class Device {
     if (this.type ===  'microcontroller'){
       icon = 'chip';
     }
-    if (this.model.match(/raspberry|c\.?h\.?i\.?p\.?/i)) {
+    if (this.model.match(/raspberry|C\.?H\.?I\.?P\.?/i)) {
       icon = 'raspberrypi'
     }
     if (this.model.match(/book|laptop/i)) {

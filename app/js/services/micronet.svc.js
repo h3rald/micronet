@@ -92,6 +92,8 @@ export class MicronetService {
   }
 
   _connect(settings){
+    settings = settings || {};
+    this.config.settings = this.config.settings || {};
     const username = settings.username || this.config.settings.username;
     const password = settings.password || this.config.settings.password;
     const hostname = settings.hostname || this.config.settings.hostname;

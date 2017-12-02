@@ -1,10 +1,10 @@
 from utils import cpython_sensor
+cpython_sensor()
 import psutil
 
 class RamSensor:
 
     def __init__(self, id="", freq=0):
-        cpython_sensor()
         self.sensor_id = 'ram'
         self.info = dict(
             uom = '%',

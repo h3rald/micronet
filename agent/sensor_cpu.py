@@ -1,17 +1,18 @@
 from utils import cpython_sensor
+cpython_sensor()
 import psutil
+from cpuinfo import get_cpu_info 
 
 class CpuSensor:
 
     def __init__(self, id="", freq=0):
-        cpython_sensor()
         self.sensor_id = 'cpu'
         self.info = dict(
             uom = '%',
             type = 'cpu',
             freq = freq,
             label = 'CPU Usage',
-            frequency = psutil.cpu_freq().max,
+            frequency = get_cpu_info()['hz_advertised'],
             cores = psutil.cpu_count(),
             id = id)
     

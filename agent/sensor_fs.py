@@ -1,10 +1,10 @@
 from utils import cpython_sensor
+cpython_sensor()
 import psutil
 
 class FsSensor:
 
     def __init__(self, id="", mount="", device="", freq=0):
-        cpython_sensor()
         self.sensor_id = id
         self.info = dict(
             uom = '%',

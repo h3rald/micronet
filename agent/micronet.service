@@ -4,7 +4,7 @@ After=network.target
 
 [Service]
 User=user
-ExecStart=/usr/local/bin/micropython /path/to/agent/micronet.py
+ExecStart=/usr/bin/python3 /path/to/agent/micronet.py
 WorkingDirectory=/path/to/agent
 Restart=always
 

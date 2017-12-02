@@ -14,7 +14,7 @@ class FsSensor:
             mount = mount,
             freq = freq,
             id = self.sensor_id,
-            total = "{0}GB".format(psutil.disk_usage(mount).total/1000000)
+            total = "{0}GB".format(int(psutil.disk_usage(mount).total/(1024*1024*1024)))
         )
     
     def sample(self):

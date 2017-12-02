@@ -11,7 +11,7 @@ class RamSensor:
             type = 'ram',
             freq = freq,
             label = 'RAM Usage',
-            total = psutil.virtual_memory().total,
+            total = "{0}MB".format(int(psutil.virtual_memory().total/(1024*1024))),
             id = id)
 
     def sample(self):

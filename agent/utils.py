@@ -1,6 +1,5 @@
 import sys
 
-
 def cpython_sensor():
     if sys.implementation.name != 'cpython':
         raise NotImplementedError("CPython is required for this sensor.")

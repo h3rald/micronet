@@ -1,9 +1,15 @@
 import sys
-import ujson
-sys.path.append('vendor')
-from utils import *
-from thingflow import *
+if sys.implementation.name == 'cpython':
+    from os import uname
+    import json
+    import asyncio
+    from thingflow.base import Scheduler, SensorAsOutputThing
+else:
+    sys.path.append('vendor')
+    import ujson as json
+    from thingflow import *
 
+from utils import *
 from mqtt_connector import MQTTConnector
 from config import Config
 
@@ -44,19 +50,23 @@ class Agent:
         self.logger.notice("MicroNet Agent started on %s (%s)" % (self.id, self.type))
         self.conn = MQTTConnector(self.id)
         self.conn.set_last_will('micronet/devices/' + self.id + '/online', 'false')
-        self.scheduler = Scheduler()
+        if sys.implementation.name == 'cpython':
+            self.scheduler = Scheduler(asyncio.get_event_loop())
+        else:
+            self.scheduler = Scheduler()
 
     def getOsData(self):
+        u = uname()
         res = dict()
-        res['architecture'] = cmd('uname -m')
-        res['kernel'] = cmd('uname -s')
-        res['version'] = cmd('uname -r')
+        res['architecture'] = u.machine
+        res['kernel'] = u.sysname
+        res['version'] = u.release
         return res
 
     def start(self):
         self.conn.connect()
         self.conn.publish('micronet/devices/' + self.id + '/online', 'true', retain=True, qos=1)
-        self.conn.publish('micronet/devices/' + self.id + '/info', ujson.dumps(self.data), retain=True, qos=1)
+        self.conn.publish('micronet/devices/' + self.id + '/info', json.dumps(self.data), retain=True, qos=1)
         self.scheduler.run_forever()
 
     def schedule(self):

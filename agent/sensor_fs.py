@@ -1,11 +1,10 @@
-import ure
-import sys
-from utils import cmd
+from utils import cpython_sensor
+import psutil
 
 class FsSensor:
 
     def __init__(self, id="", mount="", device="", freq=0):
-        self.command = 'df -P | grep {0}'.format(device)
+        cpython_sensor()
         self.sensor_id = id
         self.info = dict(
             uom = '%',
@@ -14,13 +13,9 @@ class FsSensor:
             device = device,
             mount = mount,
             freq = freq,
-            id = self.sensor_id)
-        total_regex = "[^\s]\s+([0-9a-zA-Z.]+)"
-        total_cmd = 'df -H | grep {0}'.format(device)
-        self.info['total'] = ure.search(total_regex, cmd(total_cmd)).group(1) + 'B'
+            id = self.sensor_id,
+            total = "{0}GB".format(psutil.disk_usage(mount).total/1000000)
+        )
     
     def sample(self):
-        raw = cmd(self.command)
-        regex = "[^\s]+\s+\d+\s+\d+\s+\d+\s+(\d+)%"
-        m = ure.search(regex, raw)
-        return int(m.group(1))
+        return psutil.disk_usage(self.info['mount']).percent

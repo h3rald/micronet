@@ -1,14 +1,20 @@
-import ujson
-import uio
-from utils import Singleton
+import utils
+import sys
 
-class Config(Singleton):
+if sys.implementation.name == 'cpython':
+    import json
+    import io
+else:
+    import ujson as json
+    import uio as io
+
+class Config(utils.Singleton):
 
     __getattr__= dict.__getitem__
 
     def __init__(self):
-        f = uio.open('config.json')
-        self._data = ujson.loads(f.read())
+        f = io.open('config.json')
+        self._data = json.loads(f.read())
         f.close()
 
     def get(self, s):

@@ -1,15 +1,15 @@
 import sys
-sys.path.append('vendor')
-try:
-    import os
-    def cmd(s):
-        return ''.join(map(lambda x: x.strip(), os.popen(s).readlines()))
-except ImportError:
-    def cmd(s):
-        return ''
 
-import sys
-import ure
+
+def cpython_sensor():
+    if sys.implementation.name != 'cpython':
+        raise NotImplementedError("CPython is required for this sensor.")
+
+if sys.implementation.name == 'cpython':
+    import re
+else:
+    sys.path.append('vendor')
+    import ure as re
 
 def to_pascal_case(snake_case_str):
     parts = snake_case_str.split('_')
@@ -27,7 +27,7 @@ class Logger(Singleton):
     LEVEL = 3
 
     for arg in sys.argv:
-        match = ure.search("--log:(\d)", arg)
+        match = re.search("--log:(\d)", arg)
         if match:
             LEVEL = int(match.group(1))
             break;

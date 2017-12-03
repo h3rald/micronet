@@ -1,4 +1,5 @@
 __pycache__
 agent/config.json
+agent/config.*.json
 agent/dist/
 agent/micronet.egg-info/

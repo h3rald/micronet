@@ -1,7 +1,6 @@
 # Based on: https://github.com/mpi-sws-rse/thingflow-python/blob/master/micropython/mqtt_writer.py
 
 import sys
-sys.path.append('vendor')
 from utils import *
 from config import Config
 
@@ -10,7 +9,7 @@ if sys.implementation.name == 'cpython':
     import json
     import ssl
 else:
-    import umqtt.robust.MQTTClient as mqtt
+    from umqtt.robust import MQTTClient as mqtt
     import ujson as json
 
 class MQTTConnectorWriter:
@@ -70,7 +69,8 @@ else:
             self.logger = Logger()
             self.config = Config()
             self.client = mqtt(
-                server=self.config.get('server'),
+                self.config.get('id'),
+                self.config.get('server'),
                 port=self.config.get('port'),
                 ssl=True,
                 user=self.config.get('username'),

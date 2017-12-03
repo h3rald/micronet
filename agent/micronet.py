@@ -1,5 +1,7 @@
-from agent import Agent
 import sys
+sys.path.append('lib')
+
+from agent import Agent
 
 AGENT = Agent()  
 

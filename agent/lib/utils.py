@@ -7,7 +7,6 @@ def cpython_sensor():
 if sys.implementation.name == 'cpython':
     import re
 else:
-    sys.path.append('vendor')
     import ure as re
 
 def to_pascal_case(snake_case_str):
@@ -55,7 +54,7 @@ class Logger(Singleton):
     
     if LEVEL > 1:
         def warning(self, *args):
-            print("  WARN:"*args)
+            print("  WARN:", *args)
     
     if LEVEL > 2:
         def notice(self, *args):

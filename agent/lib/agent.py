@@ -7,7 +7,7 @@ if sys.implementation.name == 'cpython':
 else:
     import ujson as json
     from thingflow import *
-    import os
+    from os import uname, dupterm
     import machine
 
 from utils import *
@@ -46,8 +46,7 @@ class Agent:
         self.data['implementation']['version'] = '.'.join(str(x) for x in sys.implementation.version)
         self.data['platform'] = sys.platform
         self.data['sensors'] = dict()
-        if self.type == 'computer':
-            self.data['os'] = self.getOsData()
+        self.data['os'] = self.getOsData()
         self.logger.notice("MicroNet Agent started on %s (%s)" % (self.id, self.type))
         self.conn = MQTTConnector(self.id)
         self.conn.set_last_will('micronet/devices/' + self.id + '/online', 'false')
@@ -59,7 +58,7 @@ class Agent:
     def wifi_connect(self):
         self.networks = self.config.get('wifi')
         uart = machine.UART(0, 115200)
-        os.dupterm(uart)
+        dupterm(uart)
 
         if machine.reset_cause() != machine.SOFT_RESET:
             from network import WLAN

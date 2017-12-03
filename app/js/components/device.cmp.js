@@ -54,9 +54,6 @@ export class DeviceComponent {
   }
 
   cpu(cpus) {
-    if (!cpus) {
-      return '';
-    }
     const s = cpus[0];
     return this.ui.panel({
       title: [
@@ -75,9 +72,6 @@ export class DeviceComponent {
   }
 
   ram(mems) {
-    if (!mems) {
-      return '';
-    }
     const s = mems[0];
     return this.ui.panel({
       title: [
@@ -96,15 +90,12 @@ export class DeviceComponent {
   }
 
   fs(disks) {
-    if (!disks) {
-      return '';
-    }
     return this.ui.panel({
       title: [
         this.ui.icon('harddisk'),
         'FileSystem'
       ],
-      body: this.ui.columns(disks.map((disk) => {
+      body: disks.map((disk) => {
         return this.ui.card({
           title: m.trust(disk.diskLabel),
           body: [
@@ -116,24 +107,50 @@ export class DeviceComponent {
           ],
           footer: this.ui.meter(disk.value)
         });
-      }))
+      })
     });
   }
+
+  bme280(bmes) {
+    const s = bmes[0];
+    return this.ui.panel({
+      title: [
+        this.ui.icon('weather-partlycloudy'),
+        'BME280'
+      ],
+      body: [
+        this.ui.properties({
+          Temperature: s.temperature,
+          Pressure: s.pressure,
+          Humidity: s.humidity
+        })
+      ]
+    });
+  }
+
 
   view() {
     let content = m(LoadingComponent);
     if (!this.loading) {
+      const columns = [this.info()];
+      if (this.device.sensors.cpu) {
+        columns.push(this.cpu(this.device.sensors.cpu));
+      }
+      if (this.device.sensors.ram) {
+        columns.push(this.ram(this.device.sensors.ram));
+      }
+      if (this.device.sensors.fs) {
+        columns.push(this.fs(this.device.sensors.fs));
+      }
+      if (this.device.sensors.bme280) {
+        columns.push(this.bme280(this.device.sensors.bme280));
+      }
       content = m('main.container', [
         m('h1', [
           this.device.icon,
           `${this.device.id} (${this.device.type})`
         ]),
-        this.ui.columns([
-          this.info(),
-          this.cpu(this.device.sensors.cpu),
-          this.ram(this.device.sensors.ram),
-          this.fs(this.device.sensors.fs)
-        ])
+        this.ui.columns(columns)
       ]);
     }
     return m('article.host', [

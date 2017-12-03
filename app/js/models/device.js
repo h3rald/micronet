@@ -3,6 +3,7 @@ import { Sensor } from '../models/sensor.js';
 import { RamSensor } from './sensor_ram.js';
 import { CpuSensor } from './sensor_cpu.js';
 import { FsSensor } from './sensor_fs.js';
+import { Bme280Sensor } from './sensor_bme280.js';
 
 export class Device {
   constructor(id, obj) {
@@ -10,7 +11,8 @@ export class Device {
     this.sensorTypes = {
       'cpu': CpuSensor,
       'ram': RamSensor,
-      'fs': FsSensor
+      'fs': FsSensor,
+      'bme280': Bme280Sensor
     };
     this.utils = new UtilsService();
     this.p = this.utils.prop;

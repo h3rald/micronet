@@ -5,7 +5,7 @@ from cpuinfo import get_cpu_info
 
 class CpuSensor:
 
-    def __init__(self, id="", freq=0):
+    def __init__(self, id="", freq=5):
         self.sensor_id = 'cpu'
         self.info = dict(
             uom = '%',

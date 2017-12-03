@@ -72,14 +72,12 @@ class Agent:
             nets = frozenset([e.ssid for e in available_nets])
             known_nets_names = frozenset([key for key in self.networks])
             net_to_use = list(nets & known_nets_names)
-            print(net_to_use)
             try:
                 net_to_use = net_to_use[0]
                 net_properties = self.networks[net_to_use]
                 pwd = net_properties['password']
                 sec = [e.sec for e in available_nets if e.ssid == net_to_use][0]
                 if 'config' in net_properties:
-                    print(net_properties['config'])
                     wl.ifconfig(config=tuple(net_properties['config']))
                 wl.connect(net_to_use, (sec, pwd), timeout=10000)
                 while not wl.isconnected():

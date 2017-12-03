@@ -4,6 +4,10 @@ def cpython_sensor():
     if sys.implementation.name != 'cpython':
         raise NotImplementedError("CPython is required for this sensor.")
 
+def upython_sensor():
+    if sys.implementation.name != 'micropython':
+        raise NotImplementedError("MicroPython is required for this sensor.")
+
 if sys.implementation.name == 'cpython':
     import re
 else:
@@ -22,7 +26,7 @@ class Singleton(object):
 
 class Logger(Singleton):
     
-    LEVEL = 3
+    LEVEL = 4
 
     for arg in sys.argv:
         match = re.search("--log:(\d)", arg)

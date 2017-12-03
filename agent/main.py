@@ -7,9 +7,8 @@ from agent import Agent
 AGENT = Agent()
 
 AGENT.wifi_connect()
+AGENT.schedule()
+AGENT.start()
 
-#AGENT.schedule()
-#AGENT.start()
-
-#while True:
-#    pass
+while True:
+    pass

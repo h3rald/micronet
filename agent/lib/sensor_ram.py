@@ -4,7 +4,7 @@ import psutil
 
 class RamSensor:
 
-    def __init__(self, id="", freq=0):
+    def __init__(self, id="", freq=5):
         self.sensor_id = 'ram'
         self.info = dict(
             uom = '%',

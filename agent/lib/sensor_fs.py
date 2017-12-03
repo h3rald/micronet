@@ -4,7 +4,7 @@ import psutil
 
 class FsSensor:
 
-    def __init__(self, id="", mount="", device="", freq=0):
+    def __init__(self, id="", mount="", device="", freq=5):
         self.sensor_id = id
         self.info = dict(
             uom = '%',

@@ -14,15 +14,14 @@ else:
 
 class MQTTConnectorWriter:
 
-    def __init__(self, client, id, sensor):
+    def __init__(self, connector, id, sensor):
         self.logger = Logger()
-        self.client = client
+        self.connector = connector
         self.topic = "micronet/devices/{0}/data/{1}".format(id, sensor)
 
     def on_next(self, msg):
-        self.logger.info("MQTT - Publishing to:", self.topic)
         data = bytes(json.dumps(msg[2]), 'utf-8')
-        self.client.publish(self.topic, data, retain=True)
+        self.connector.publish(self.topic, data, retain=True)
 
     def on_completed(self):
         self.logger.notice("MQTT - Completed.")
@@ -41,7 +40,7 @@ if sys.implementation.name == 'cpython':
             self.client = mqtt.Client(client_id=self.id)
 
         def writer(self, sensor):
-            return MQTTConnectorWriter(self.client, self.id, sensor)
+            return MQTTConnectorWriter(self, self.id, sensor)
 
         def connect(self):
             ssl_ctx = ssl.create_default_context()
@@ -53,13 +52,18 @@ if sys.implementation.name == 'cpython':
             self.logger.info("MQTT - Connecting to server...")
             self.client.connect(self.config.get('server'), self.config.get('port'))
             self.logger.notice("MQTT - Connection successful.")
+            self.client.loop_start()
 
         def set_last_will(self, topic, value):
             self.client.will_set(topic, payload=value, retain=True, qos=1)
 
         def publish(self, topic, message, retain=False, qos=0):
             self.logger.info("MQTT - Publishing to:", topic)
-            self.client.publish(topic, payload=message, retain=retain, qos=qos)
+            out = self.client.publish(topic, payload=message, retain=retain, qos=qos)
+            if out[0] == mqtt.MQTT_ERR_SUCCESS:
+                self.logger.info("MQTT - Message Published.")
+            else:
+                self.logger.warning("MQTT - Error:", mqtt.error_string(out[0]))
 
 else:
     class MQTTConnector:

@@ -113,7 +113,7 @@ class Agent:
         for k, v in self.sensors.items():
             id = k.split(':')[0]
             unit = id
-            if v['unit']: 
+            if 'unit' in v: 
                 unit = v['unit']
             module = __import__("sensor_" + unit)
             SensorClass = getattr(module, to_pascal_case(id + "_sensor"))

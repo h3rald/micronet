@@ -92,14 +92,10 @@ else:
             self.logger.notice("MQTT - Connection successful.")
 
         def set_last_will(self, topic, value):
-            self.client.set_last_will(topic, value, retain=True, qos=0)
+            self.client.set_last_will(topic, value, retain=True, qos=1)
 
-        def publish(self, topic, message, retain=True, qos=0):
+        def publish(self, topic, message, retain=True, qos=1):
             self.logger.info("MQTT - Publishing to:", topic)
-            try:
-                self.client.publish(topic, message, retain=retain, qos=qos)
-                self.logger.info("MQTT - Message Published.")
-            except Exception as ex:
-                self.logger.warning("MQTT - Error:", ex)
-
+            self.client.publish(bytes(topic, 'utf-8'), bytes(message, 'utf-8'), retain=retain, qos=qos)
+            self.logger.info("MQTT - Message Published.")
 

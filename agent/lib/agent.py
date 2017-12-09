@@ -20,7 +20,14 @@ class StdoutConnector:
         self.logger = Logger()
 
     def on_next(self, x):
-        self.logger.info("{0} ({1}): {2}{3}".format(self.info['label'], self.info['id'], x[2], self.info['uom']))
+        value = x[2]
+        if type(value) == dict:
+            data = self.info['data']
+            # Print multiple values, assuming labels and uoms are in info['data']
+            for key, val in data.items():
+                self.logger.info("{0} ({1}): {2}{3}".format(val['label'], self.info['id'], value[key], val['uom']))
+        else:
+            self.logger.info("{0} ({1}): {2}{3}".format(self.info['label'], self.info['id'], value, self.info['uom']))
 
     def on_completed():
         self.logger.info("[stdout-connector] Completed.")
@@ -97,21 +104,24 @@ class Agent:
 
     def start(self):
         self.conn.connect()
-        self.conn.publish('micronet/devices/' + self.id + '/online', 'true', retain=True, qos=1)
-        self.conn.publish('micronet/devices/' + self.id + '/info', json.dumps(self.data), retain=True, qos=1)
+        self.conn.publish('micronet/devices/' + self.id + '/online', 'true', retain=True, qos=0)
+        self.conn.publish('micronet/devices/' + self.id + '/info', json.dumps(self.data), retain=True, qos=0)
         self.scheduler.run_forever()
 
     def schedule(self):
         self.logger.info("Scheduling sensors...")
         for k, v in self.sensors.items():
             id = k.split(':')[0]
-            module = __import__("sensor_" + id)
+            unit = id
+            if v['unit']: 
+                unit = v['unit']
+            module = __import__("sensor_" + unit)
             SensorClass = getattr(module, to_pascal_case(id + "_sensor"))
             v['id'] = k
             sensor = SensorClass(**v)
             sensor_output = SensorAsOutputThing(sensor)
             self.data['sensors'][k] = sensor.info
             sensor_output.connect(StdoutConnector(sensor.info))
-            sensor_output.connect(self.conn.writer(k))
+            sensor_output.connect(self.conn.writer(k, sensor.info))
             self.scheduler.schedule_periodic(sensor_output, v['freq'])
             self.logger.info("Sensor '{0}' sampling every {1}s".format(k, v['freq']))

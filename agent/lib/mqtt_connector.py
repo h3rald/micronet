@@ -9,19 +9,21 @@ if sys.implementation.name == 'cpython':
     import json
     import ssl
 else:
+    from utime import sleep_ms
     from umqtt.robust import MQTTClient as mqtt
     import ujson as json
 
 class MQTTConnectorWriter:
 
-    def __init__(self, connector, id, sensor):
+    def __init__(self, connector, id, sensor, info):
+        self.id = id
         self.logger = Logger()
         self.connector = connector
+        self.info = info
         self.topic = "micronet/devices/{0}/data/{1}".format(id, sensor)
 
     def on_next(self, msg):
-        data = bytes(json.dumps(msg[2]), 'utf-8')
-        self.connector.publish(self.topic, data, retain=True)
+        self.connector.publish(self.topic, json.dumps(msg[2]))
 
     def on_completed(self):
         self.logger.notice("MQTT - Completed.")
@@ -39,8 +41,8 @@ if sys.implementation.name == 'cpython':
             self.config = Config()
             self.client = mqtt.Client(client_id=self.id)
 
-        def writer(self, sensor):
-            return MQTTConnectorWriter(self, self.id, sensor)
+        def writer(self, sensor, info):
+            return MQTTConnectorWriter(self, self.id, sensor, info)
 
         def connect(self):
             ssl_ctx = ssl.create_default_context()
@@ -57,7 +59,7 @@ if sys.implementation.name == 'cpython':
         def set_last_will(self, topic, value):
             self.client.will_set(topic, payload=value, retain=True, qos=1)
 
-        def publish(self, topic, message, retain=False, qos=0):
+        def publish(self, topic, message, retain=True, qos=1):
             self.logger.info("MQTT - Publishing to:", topic)
             out = self.client.publish(topic, payload=message, retain=retain, qos=qos)
             if out[0] == mqtt.MQTT_ERR_SUCCESS:
@@ -81,8 +83,8 @@ else:
                 password=self.config.get('password')
             )
 
-        def writer(self, sensor):
-            return MQTTConnectorWriter(self.client, self.id, sensor)
+        def writer(self, sensor, info):
+            return MQTTConnectorWriter(self, self.id, sensor, info)
 
         def connect(self):
             self.logger.info("MQTT - Connecting to server...")
@@ -90,8 +92,14 @@ else:
             self.logger.notice("MQTT - Connection successful.")
 
         def set_last_will(self, topic, value):
-            self.client.set_last_will(topic, value, retain=True, qos=1)
+            self.client.set_last_will(topic, value, retain=True, qos=0)
 
-        def publish(self, topic, message, retain=False, qos=0):
+        def publish(self, topic, message, retain=True, qos=0):
             self.logger.info("MQTT - Publishing to:", topic)
-            self.client.publish(bytes(topic, 'utf-8'), bytes(message, 'utf-8'), retain, qos)
+            try:
+                self.client.publish(topic, message, retain=retain, qos=qos)
+                self.logger.info("MQTT - Message Published.")
+            except Exception as ex:
+                self.logger.warning("MQTT - Error:", ex)
+
+

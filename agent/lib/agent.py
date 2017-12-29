@@ -90,9 +90,11 @@ class Agent:
                     machine.idle() # save power while waiting
                 self.logger.notice("Connected to "+net_to_use+" with IP address:" + wl.ifconfig()[0])
             except Exception as e:
-                self.logger.warning("Failed to connect to any known network, going into AP mode")
-                wl.init(mode=WLAN.AP, ssid=original_ssid, auth=original_auth, channel=6, antenna=WLAN.INT_ANT)
-                raise
+                self.logger.warning("Failed to connect to any known network. Resetting board in 20s.")
+                utils.delayed_reset()
+                #self.logger.warning("Failed to connect to any known network, going into AP mode")
+                #wl.init(mode=WLAN.AP, ssid=original_ssid, auth=original_auth, channel=6, antenna=WLAN.INT_ANT)
+                #raise
     
     def getOsData(self):
         u = uname()

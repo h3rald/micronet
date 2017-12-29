@@ -12,6 +12,13 @@ if sys.implementation.name == 'cpython':
     import re
 else:
     import ure as re
+    import utime
+    import machine
+
+    def delayed_reset():
+        utime.sleep(20)
+        machine.resey()
+
 
 def to_pascal_case(snake_case_str):
     parts = snake_case_str.split('_')

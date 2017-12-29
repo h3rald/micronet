@@ -41,7 +41,7 @@ class Bme280Sensor:
         data = self.bme280.read_compensated_data()
         return dict(temperature=data[0]/100, pressure=data[1]/25600, humidity=data[2]/1000)
 
-class Bme280TemperatureSensor:
+class TemperatureSensor:
 
     def __init__(self, id="", unit="bme280", sda="P9", scl="P10", freq=5):
         self.sensor_id = id
@@ -63,7 +63,7 @@ class Bme280TemperatureSensor:
     def sample(self):
         return self.bme280.read_compensated_data()[0]/100
 
-class Bme280PressureSensor:
+class PressureSensor:
 
     def __init__(self, id="", unit="bme280", sda="P9", scl="P10", freq=5):
         self.sensor_id = id
@@ -85,7 +85,7 @@ class Bme280PressureSensor:
     def sample(self):
         return self.bme280.read_compensated_data()[1]/25600
 
-class Bme280HumiditySensor:
+class HumiditySensor:
 
     def __init__(self, id="", unit="bme280", sda="P9", scl="P10", freq=5):
         self.sensor_id = id

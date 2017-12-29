@@ -9,8 +9,8 @@ if sys.implementation.name == 'cpython':
     import json
     import ssl
 else:
-    from utime import sleep_ms
-    from umqtt.robust import MQTTClient as mqtt
+    import utime
+    import umqtt.simple
     import ujson as json
 
 class MQTTConnectorWriter:
@@ -33,6 +33,7 @@ class MQTTConnectorWriter:
     
 
 if sys.implementation.name == 'cpython':
+
     class MQTTConnector:
 
         def __init__(self, id):
@@ -45,6 +46,7 @@ if sys.implementation.name == 'cpython':
             return MQTTConnectorWriter(self, self.id, sensor, info)
 
         def connect(self):
+            self.client.DEBUG = True
             ssl_ctx = ssl.create_default_context()
             ssl_ctx.check_hostname = False
             self.client.tls_set_context(ssl_ctx)
@@ -68,17 +70,62 @@ if sys.implementation.name == 'cpython':
                 self.logger.warning("MQTT - Error:", mqtt.error_string(out[0]))
 
 else:
+
+    class MQTTClient(umqtt.simple.MQTTClient):
+
+        def __init__(self, client_id, server, port=0, user=None, password=None):
+            super().__init__(client_id, server, port=port, user=user, password=password, keepalive=0, ssl=True, ssl_params={})
+            self.logger = Logger()
+
+        def delay(self, i):
+            utime.sleep(i)
+
+        def reconnect(self):
+            self.logger.info('Reconnecting...')
+            super().close()
+            i = 0
+            while 1:
+                try:
+                    self.logger.info('Connecting...', i)
+                    return super().connect(True)
+                except OSError as e:
+                    self.logger.warning(e)
+                    i += 1
+                    self.delay(i)
+
+        def delayed_reset(self):
+            self.logger.warning('Connection error detected. Resetting board in 20s...')
+            utils.delayed_reset()
+
+        def publish(self, topic, msg, retain=False, qos=0):
+            while 1:
+                try:
+                    return super().publish(topic, msg, retain, qos)
+                except OSError as e:
+                    self.logger.warning(e)
+                self.delayed_reset()
+                #self.reconnect()
+
+        def wait_msg(self):
+            while 1:
+                try:
+                    return super().wait_msg()
+                except OSError as e:
+                    self.logger.warning(e)
+                self.delayed_reset()
+                #self.reconnect()
+
+
     class MQTTConnector:
 
         def __init__(self, id):
             self.id = id;
             self.logger = Logger()
             self.config = Config()
-            self.client = mqtt(
+            self.client = MQTTClient(
                 self.config.get('id'),
                 self.config.get('server'),
                 port=self.config.get('port'),
-                ssl=True,
                 user=self.config.get('username'),
                 password=self.config.get('password')
             )
@@ -88,13 +135,17 @@ else:
 
         def connect(self):
             self.logger.info("MQTT - Connecting to server...")
-            self.client.connect()
+            try:
+                self.client.connect()
+            except OSError as e:
+                self.logger.warning('Connection Error:', e)
+                self.client.delayed_reset()
             self.logger.notice("MQTT - Connection successful.")
 
         def set_last_will(self, topic, value):
-            self.client.set_last_will(topic, value, retain=True, qos=1)
+            self.client.set_last_will(topic, value, retain=True, qos=0)
 
-        def publish(self, topic, message, retain=True, qos=1):
+        def publish(self, topic, message, retain=True, qos=0):
             self.logger.info("MQTT - Publishing to:", topic)
             self.client.publish(bytes(topic, 'utf-8'), bytes(message, 'utf-8'), retain=retain, qos=qos)
             self.logger.info("MQTT - Message Published.")

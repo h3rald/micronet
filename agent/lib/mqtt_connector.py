@@ -1,17 +1,19 @@
 # Based on: https://github.com/mpi-sws-rse/thingflow-python/blob/master/micropython/mqtt_writer.py
 
 import sys
-from utils import *
-from config import Config
 
 if sys.implementation.name == 'cpython':
     import paho.mqtt.client as mqtt
     import json
     import ssl
 else:
-    import utime
+    import gc
     import umqtt.simple
+    import utime
     import ujson as json
+
+from utils import *
+from config import Config
 
 class MQTTConnectorWriter:
 
@@ -46,7 +48,6 @@ if sys.implementation.name == 'cpython':
             return MQTTConnectorWriter(self, self.id, sensor, info)
 
         def connect(self):
-            self.client.DEBUG = True
             ssl_ctx = ssl.create_default_context()
             ssl_ctx.check_hostname = False
             self.client.tls_set_context(ssl_ctx)
@@ -80,22 +81,23 @@ else:
         def delay(self, i):
             utime.sleep(i)
 
+        def connect(self, clean_session=True):
+            super().connect(clean_session=clean_session)
+
         def reconnect(self):
-            self.logger.info('Reconnecting...')
             super().close()
             i = 0
             while 1:
                 try:
-                    self.logger.info('Connecting...', i)
                     return super().connect(True)
                 except OSError as e:
                     self.logger.warning(e)
                     i += 1
                     self.delay(i)
 
-        def delayed_reset(self):
+        def reset(self):
             self.logger.warning('Connection error detected. Resetting board in 20s...')
-            utils.delayed_reset()
+            delayed_reset()
 
         def publish(self, topic, msg, retain=False, qos=0):
             while 1:
@@ -103,7 +105,7 @@ else:
                     return super().publish(topic, msg, retain, qos)
                 except OSError as e:
                     self.logger.warning(e)
-                self.delayed_reset()
+                self.reset()
                 #self.reconnect()
 
         def wait_msg(self):
@@ -112,7 +114,7 @@ else:
                     return super().wait_msg()
                 except OSError as e:
                     self.logger.warning(e)
-                self.delayed_reset()
+                self.reset()
                 #self.reconnect()
 
 
@@ -134,12 +136,12 @@ else:
             return MQTTConnectorWriter(self, self.id, sensor, info)
 
         def connect(self):
-            self.logger.info("MQTT - Connecting to server...")
+            self.logger.info("MQTT - Connecting to server!...")
             try:
                 self.client.connect()
             except OSError as e:
                 self.logger.warning('Connection Error:', e)
-                self.client.delayed_reset()
+                #self.client.reset()
             self.logger.notice("MQTT - Connection successful.")
 
         def set_last_will(self, topic, value):

@@ -111,8 +111,21 @@ export class DeviceComponent {
     });
   }
 
-  bme280(bmes) {
-    const s = bmes[0];
+  temperature(t) {
+    return this.ui.panel({
+      title: [
+        this.ui.icon('thermometer'),
+        'Temperature'
+      ],
+      body: [
+        this.ui.properties({
+          Temperature: t.valueLabel
+        })
+      ]
+    });
+  }
+
+  bme280(bme) {
     return this.ui.panel({
       title: [
         this.ui.icon('weather-partlycloudy'),
@@ -120,9 +133,9 @@ export class DeviceComponent {
       ],
       body: [
         this.ui.properties({
-          Temperature: s.temperature,
-          Pressure: s.pressure,
-          Humidity: s.humidity
+          Temperature: bme.find((v) => v.id === 'temperature').valueLabel,
+          Pressure: bme.find((v) => v.id === 'pressure').valueLabel,
+          Humidity: bme.find((v) => v.id === 'humidity').valueLabel
         })
       ]
     });

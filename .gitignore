@@ -3,3 +3,5 @@ agent/config.json
 agent/config.*.json
 agent/dist/
 agent/micronet.egg-info/
+agent/_compiled/
+agent/**/*.mpy

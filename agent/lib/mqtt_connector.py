@@ -8,7 +8,7 @@ if sys.implementation.name == 'cpython':
     import ssl
 else:
     import gc
-    import umqtt.simple
+    import umqtt_simple 
     import utime
     import ujson as json
 
@@ -72,10 +72,10 @@ if sys.implementation.name == 'cpython':
 
 else:
 
-    class MQTTClient(umqtt.simple.MQTTClient):
+    class MQTTClient(umqtt_simple.MQTTClient):
 
         def __init__(self, client_id, server, port=0, user=None, password=None):
-            super().__init__(client_id, server, port=port, user=user, password=password, keepalive=0, ssl=True, ssl_params={})
+            super().__init__(client_id, server, port=port, user=user, password=password, keepalive=0, ssl=False)
             self.logger = Logger()
 
         def delay(self, i):
@@ -136,12 +136,12 @@ else:
             return MQTTConnectorWriter(self, self.id, sensor, info)
 
         def connect(self):
-            self.logger.info("MQTT - Connecting to server!...")
+            self.logger.info("MQTT - Connecting to server...")
             try:
                 self.client.connect()
             except OSError as e:
                 self.logger.warning('Connection Error:', e)
-                #self.client.reset()
+                self.client.reset()
             self.logger.notice("MQTT - Connection successful.")
 
         def set_last_will(self, topic, value):

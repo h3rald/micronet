@@ -3,7 +3,6 @@ import { Sensor } from '../models/sensor.js';
 import { RamSensor } from './sensor_ram.js';
 import { CpuSensor } from './sensor_cpu.js';
 import { FsSensor } from './sensor_fs.js';
-import { Bme280Sensor } from './sensor_bme280.js';
 
 export class Device {
   constructor(id, obj) {
@@ -11,8 +10,7 @@ export class Device {
     this.sensorTypes = {
       'cpu': CpuSensor,
       'ram': RamSensor,
-      'fs': FsSensor,
-      'bme280': Bme280Sensor
+      'fs': FsSensor
     };
     this.utils = new UtilsService();
     this.p = this.utils.prop;
@@ -40,7 +38,8 @@ export class Device {
     }
     const sensors = Object.keys(info).map((id) => {
       const obj = info[id]
-      return new this.sensorTypes[obj.type](obj, this.p(this.rawData, `data.${obj.id}`));
+      const constr = this.sensorTypes[obj.type] || Sensor;
+      return new constr(obj, this.p(this.rawData, `data.${obj.id}`));
     });
     const sensorGroups = {};
     sensors.forEach((sensor) => {

@@ -18,7 +18,7 @@ footer {
   bottom: 0px;
   width: 100%;
   background: #F0F1FA;
-  padding-top: 5px;
+  padding-bottom: 20px;
 }
 
 footer div {
@@ -26,7 +26,6 @@ footer div {
   font-size: 70%;
   margin: auto;
   text-align: center;
-  padding-bottom: 3px;
   clear: both;
 }
 
@@ -36,7 +35,7 @@ footer .actions {
 
 main, main.container {
   padding: 10px 20px 0 20px;
-  height: calc(100% - 65px);
+  height: calc(100% - 85px);
   width: 100%;
   position: fixed;
   top: 32px;

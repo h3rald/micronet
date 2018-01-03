@@ -10,20 +10,6 @@ else:
     from os import uname, dupterm
     import machine
 
-    class Informer:
-        def __init__(self, id="", conn=None, data=None):
-            self.logger = Logger()
-            self.conn = conn
-            self.id = id
-            self.data = data
-            self.sensor_id = 'informer'
-    
-        def sample(self):
-            self.logger.info('Posting online status and info...')
-            self.conn.publish('micronet/devices/' + self.id + '/online', 'true', retain=True, qos=1)
-            self.conn.publish('micronet/devices/' + self.id + '/info', json.dumps(self.data), retain=True, qos=0)
-            return 0
-
     class Resetter:
 
         def __init__(self, freq=10, max=180):
@@ -44,6 +30,20 @@ else:
 from mqtt_connector import MQTTConnector
 from utils import *
 from config import Config
+
+class Informer:
+    def __init__(self, id="", conn=None, data=None):
+        self.logger = Logger()
+        self.conn = conn
+        self.id = id
+        self.data = data
+        self.sensor_id = 'informer'
+    
+    def sample(self):
+        self.logger.info('Posting online status and info...')
+        self.conn.publish('micronet/devices/' + self.id + '/online', 'true', retain=True, qos=1)
+        self.conn.publish('micronet/devices/' + self.id + '/info', json.dumps(self.data), retain=True, qos=0)
+        return 0
 
 class StdoutConnector:
     def __init__(self, info):

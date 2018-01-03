@@ -15,9 +15,13 @@ else:
     import utime
     import machine
 
+    def start_reset():
+        utime.sleep(3)
+        machine.reset()
+
     def delayed_reset():
         utime.sleep(20)
-        machine.resey()
+        machine.reset()
 
 
 def to_pascal_case(snake_case_str):

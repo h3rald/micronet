@@ -8,7 +8,7 @@ if sys.implementation.name == 'cpython':
     import ssl
 else:
     import gc
-    import umqtt_simple 
+    import umqtt.simple 
     import utime
     import ujson as json
 
@@ -48,11 +48,12 @@ if sys.implementation.name == 'cpython':
             return MQTTConnectorWriter(self, self.id, sensor, info)
 
         def connect(self):
-            ssl_ctx = ssl.create_default_context()
-            ssl_ctx.check_hostname = False
-            self.client.tls_set_context(ssl_ctx)
-            # Do not enforce TLS verification
-            self.client.tls_insecure_set(True) 
+            if self.config.get("ssl"):
+                ssl_ctx = ssl.create_default_context()
+                ssl_ctx.check_hostname = False
+                self.client.tls_set_context(ssl_ctx)
+                # Do not enforce TLS verification
+                self.client.tls_insecure_set(True) 
             self.client.username_pw_set(self.config.get('username'), self.config.get('password'))
             self.logger.info("MQTT - Connecting to server...")
             self.client.connect(self.config.get('server'), self.config.get('port'))
@@ -72,10 +73,10 @@ if sys.implementation.name == 'cpython':
 
 else:
 
-    class MQTTClient(umqtt_simple.MQTTClient):
+    class MQTTClient(umqtt.simple.MQTTClient):
 
-        def __init__(self, client_id, server, port=0, user=None, password=None):
-            super().__init__(client_id, server, port=port, user=user, password=password, keepalive=0, ssl=False)
+        def __init__(self, client_id, server, port=0, user=None, password=None, ssl=False):
+            super().__init__(client_id, server, port=port, user=user, password=password, keepalive=0, ssl=ssl)
             self.logger = Logger()
 
         def delay(self, i):

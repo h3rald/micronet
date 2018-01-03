@@ -10,6 +10,37 @@ else:
     from os import uname, dupterm
     import machine
 
+    class Informer:
+        def __init__(self, id="", conn=None, data=None):
+            self.logger = Logger()
+            self.conn = conn
+            self.id = id
+            self.data = data
+            self.sensor_id = 'informer'
+    
+        def sample(self):
+            self.logger.info('Posting online status and info...')
+            self.conn.publish('micronet/devices/' + self.id + '/online', 'true', retain=True, qos=1)
+            self.conn.publish('micronet/devices/' + self.id + '/info', json.dumps(self.data), retain=True, qos=0)
+            return 0
+
+    class Resetter:
+
+        def __init__(self, freq=10, max=180):
+            self.freq = freq
+            self.max = max
+            self.value = 0
+            self.logger = Logger()
+            self.sensor_id = 'resetter'
+    
+        def sample(self):
+            self.value = self.value + self.freq
+            self.logger.info('-- Board reset scheduled in {}s.'.format(self.max - self.value))
+            if (self.value >= self.max):
+                self.logger.info('Resetting board...')
+                start_reset()
+            return 0
+
 from mqtt_connector import MQTTConnector
 from utils import *
 from config import Config
@@ -64,7 +95,7 @@ class Agent:
 
     def wifi_connect(self):
         self.networks = self.config.get('wifi')
-        uart = machine.UART(0, 115200)
+        #uart = machine.UART(0, 115200)
         #dupterm(uart)
         if machine.reset_cause() != machine.SOFT_RESET:
             import network
@@ -125,9 +156,20 @@ class Agent:
 
     def start(self):
         self.conn.connect()
-        self.conn.publish('micronet/devices/' + self.id + '/online', 'true', retain=True, qos=0)
+        self.conn.publish('micronet/devices/' + self.id + '/online', 'true', retain=True, qos=1)
         self.conn.publish('micronet/devices/' + self.id + '/info', json.dumps(self.data), retain=True, qos=0)
+        informer = Informer(data=self.data, id=self.id, conn=self.conn)
+        informer_out = SensorAsOutputThing(informer)
+        self.scheduler.schedule_periodic(informer_out, 25)
         self.scheduler.run_forever()
+
+    def schedule_machine_reset(self):
+        if (self.config.get('reset')):
+            freq = self.config.get('reset.freq')
+            resetter = Resetter(freq=10, max=freq)
+            resetter_out = SensorAsOutputThing(resetter)
+            self.scheduler.schedule_periodic(resetter_out, 10)
+            self.logger.info('Scheduled automatic board reset every {0} seconds.'.format(freq))
 
     def schedule(self):
         self.logger.info("Scheduling sensors...")

@@ -7,6 +7,7 @@ from agent import Agent
 AGENT = Agent()
 
 AGENT.wifi_connect()
+AGENT.schedule_machine_reset()
 AGENT.schedule()
 AGENT.start()
 

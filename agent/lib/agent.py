@@ -1,12 +1,17 @@
 import sys
+
+from mqtt_connector import MQTTConnector
+from utils import *
+from config import Config
+
 if sys.implementation.name == 'cpython':
     from os import uname
     import json
     import asyncio
     from thingflow.base import Scheduler, SensorAsOutputThing
 else:
-    import ujson as json
     from thingflow import *
+    import ujson as json
     from os import uname, dupterm
     import machine
 
@@ -26,10 +31,6 @@ else:
                 self.logger.info('Resetting board...')
                 start_reset()
             return 0
-
-from mqtt_connector import MQTTConnector
-from utils import *
-from config import Config
 
 class Informer:
     def __init__(self, id="", conn=None, data=None):

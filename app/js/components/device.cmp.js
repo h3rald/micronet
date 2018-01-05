@@ -147,8 +147,8 @@ export class DeviceComponent {
   additional() {
     return this.ui.panel({
       title: [
-        this.ui.icon('weather-partlycloudy'),
-        'Additional Sensors'
+        this.ui.icon('access-point'),
+        'Other Sensors'
       ],
       body: [
         this.ui.properties(this.additionalSensors)

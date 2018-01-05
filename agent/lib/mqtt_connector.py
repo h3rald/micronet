@@ -17,12 +17,12 @@ from config import Config
 
 class MQTTConnectorWriter:
 
-    def __init__(self, connector, id, sensor, info):
+    def __init__(self, connector, id, sensor, info, topic=None):
         self.id = id
         self.logger = Logger()
         self.connector = connector
         self.info = info
-        self.topic = "micronet/devices/{0}/data/{1}".format(id, sensor)
+        self.topic = topic or "micronet/devices/{0}/data/{1}".format(id, sensor)
 
     def on_next(self, msg):
         self.connector.publish(self.topic, json.dumps(msg[2]))
@@ -38,14 +38,15 @@ if sys.implementation.name == 'cpython':
 
     class MQTTConnector:
 
-        def __init__(self, id):
+        def __init__(self, id, topic=None):
             self.id = id;
+            self.topic = topic
             self.logger = Logger()
             self.config = Config()
             self.client = mqtt.Client(client_id=self.id)
 
         def writer(self, sensor, info):
-            return MQTTConnectorWriter(self, self.id, sensor, info)
+            return MQTTConnectorWriter(self, self.id, sensor, info, topic=self.topic)
 
         def connect(self):
             if self.config.get("ssl"):

@@ -30,7 +30,7 @@ else:
             if (self.value >= self.max):
                 self.logger.info('Resetting board...')
                 start_reset()
-            return 0
+            return 1
 
 class Informer:
     def __init__(self, id="", conn=None, data=None):
@@ -38,13 +38,14 @@ class Informer:
         self.conn = conn
         self.id = id
         self.data = data
+        self.info = dict()
+        self.info['label'] = 'Online Status'
+        self.info['id'] = id
+        self.info['uom'] = ''
         self.sensor_id = 'informer'
     
     def sample(self):
-        self.logger.info('Posting online status and info...')
-        self.conn.publish('micronet/devices/' + self.id + '/online', 'true', retain=True, qos=1)
-        self.conn.publish('micronet/devices/' + self.id + '/info', json.dumps(self.data), retain=True, qos=0)
-        return 0
+        return 'true'
 
 class StdoutConnector:
     def __init__(self, info):
@@ -159,9 +160,6 @@ class Agent:
         self.conn.connect()
         self.conn.publish('micronet/devices/' + self.id + '/online', 'true', retain=True, qos=1)
         self.conn.publish('micronet/devices/' + self.id + '/info', json.dumps(self.data), retain=True, qos=0)
-        informer = Informer(data=self.data, id=self.id, conn=self.conn)
-        informer_out = SensorAsOutputThing(informer)
-        self.scheduler.schedule_periodic(informer_out, 25)
         self.scheduler.run_forever()
 
     def schedule_machine_reset(self):
@@ -174,6 +172,11 @@ class Agent:
 
     def schedule(self):
         self.logger.info("Scheduling sensors...")
+        informer = Informer(data=self.data, id=self.id, conn=self.conn)
+        informer_out = SensorAsOutputThing(informer)
+        sensor_output.connect(StdoutConnector(sensor.info))
+        sensor_output.connect(self.conn.writer(k, sensor.info, topic='micronet/devices/' + self.id + '/online'))
+        self.scheduler.schedule_periodic(informer_out, 5)
         for k, v in self.sensors.items():
             id = k.split(':')[0]
             unit = id

@@ -14,14 +14,23 @@ else:
     import ure as re
     import utime
     import machine
+    import network
 
     def start_reset():
         utime.sleep(3)
-        machine.reset()
+        try:
+            sta = network.WLAN(network.STA_IF)
+            ap = network.WLAN(network.AP_IF)
+            sta.active(False)
+            ap.active(False)
+        except:
+            pass
+        finally:
+            machine.reset()
 
     def delayed_reset():
-        utime.sleep(20)
-        machine.reset()
+        utime.sleep(17)
+        start_reset()
 
 
 def to_pascal_case(snake_case_str):

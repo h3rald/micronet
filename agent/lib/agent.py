@@ -97,8 +97,6 @@ class Agent:
 
     def wifi_connect(self):
         self.networks = self.config.get('wifi')
-        #uart = machine.UART(0, 115200)
-        #dupterm(uart)
         if machine.reset_cause() != machine.SOFT_RESET:
             import network
             wl = network.WLAN()
@@ -107,8 +105,10 @@ class Agent:
                 wl.mode(network.WLAN.STA)
             except AttributeError:
                 tuple_wifi_api = False
-                wl = network.WLAN(network.STA_IF)
-                wl.active(True)
+                sta = network.WLAN(network.STA_IF)
+                ap = network.WLAN(network.AP_IF)
+                sta.active(True)
+                ap.active(False)
             self.logger.notice("Scanning for known wifi networks...")
             if tuple_wifi_api:
                 available_nets = wl.scan()
@@ -182,13 +182,18 @@ class Agent:
             unit = id
             if 'unit' in v: 
                 unit = v['unit']
-            module = __import__("sensor_" + unit)
-            SensorClass = getattr(module, to_pascal_case(id + "_sensor"))
-            v['id'] = k
-            sensor = SensorClass(**v)
-            sensor_output = SensorAsOutputThing(sensor)
-            self.data['sensors'][k] = sensor.info
-            sensor_output.connect(StdoutConnector(sensor.info))
-            sensor_output.connect(self.conn.writer(k, sensor.info))
-            self.scheduler.schedule_periodic(sensor_output, v['freq'])
-            self.logger.info("Sensor '{0}' sampling every {1}s".format(k, v['freq']))
+            try:
+                module = __import__("sensor_" + unit)
+                SensorClass = getattr(module, to_pascal_case(id + "_sensor"))
+                v['id'] = k
+                sensor = SensorClass(**v)
+                sensor_output = SensorAsOutputThing(sensor)
+                self.data['sensors'][k] = sensor.info
+                sensor_output.connect(StdoutConnector(sensor.info))
+                sensor_output.connect(self.conn.writer(k, sensor.info))
+                self.scheduler.schedule_periodic(sensor_output, v['freq'])
+                self.logger.info("Sensor '{0}' sampling every {1}s".format(k, v['freq']))
+            except Exception as e:
+                self.logger.warning(e)
+                self.logger.warning("Resetting board in 20s.")
+                delayed_reset()

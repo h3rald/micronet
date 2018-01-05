@@ -133,8 +133,8 @@ else:
                 password=self.config.get('password')
             )
 
-        def writer(self, sensor, info):
-            return MQTTConnectorWriter(self, self.id, sensor, info)
+        def writer(self, sensor, info, topic=None):
+            return MQTTConnectorWriter(self, self.id, sensor, info, topic=topic)
 
         def connect(self):
             self.logger.info("MQTT - Connecting to server...")

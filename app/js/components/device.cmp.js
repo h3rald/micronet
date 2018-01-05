@@ -18,6 +18,8 @@ export class DeviceComponent {
     this.config = new ConfigService();
     this.ui = new UiService();
     this.device = {};
+    this.knownSensors = ['cpu', 'ram', 'fs', 'bme280', 'dht11'];
+    this.additionalSensors = {};
     this.load();
   }
 
@@ -111,15 +113,16 @@ export class DeviceComponent {
     });
   }
 
-  temperature(t) {
+  dht11(dht) {
     return this.ui.panel({
       title: [
-        this.ui.icon('thermometer'),
-        'Temperature'
+        this.ui.icon('weather-partlycloudy'),
+        'DHT11'
       ],
       body: [
         this.ui.properties({
-          Temperature: t.valueLabel
+          Temperature: dht.find((v) => v.id === 'temperature').valueLabel,
+          Humidity: dht.find((v) => v.id === 'humidity').valueLabel
         })
       ]
     });
@@ -141,22 +144,39 @@ export class DeviceComponent {
     });
   }
 
+  additional() {
+    return this.ui.panel({
+      title: [
+        this.ui.icon('weather-partlycloudy'),
+        'Additional Sensors'
+      ],
+      body: [
+        this.ui.properties(this.additionalSensors)
+      ]
+    });
+  }
+
 
   view() {
     let content = m(LoadingComponent);
     if (!this.loading) {
       const columns = [this.info()];
-      if (this.device.sensors.cpu) {
-        columns.push(this.cpu(this.device.sensors.cpu));
-      }
-      if (this.device.sensors.ram) {
-        columns.push(this.ram(this.device.sensors.ram));
-      }
-      if (this.device.sensors.fs) {
-        columns.push(this.fs(this.device.sensors.fs));
-      }
-      if (this.device.sensors.bme280) {
-        columns.push(this.bme280(this.device.sensors.bme280));
+      this.knownSensors.forEach((s) => {
+        if (this.device.sensors[s]) {
+          columns.push(this[s](this.device.sensors[s]));
+        }
+      })
+      Object.keys(this.device.sensors).forEach((s) => {
+        console.log(s);
+        if (!this.knownSensors.includes(s)) {
+          this.device.sensors[s].forEach((sensor) => {
+            this.additionalSensors[sensor.label] = sensor.valueLabel;
+          })
+        }
+      })
+      if (Object.keys(this.additionalSensors).length > 0) {
+        console.log(Object.keys(this.additionalSensors))
+        columns.push(this.additional());
       }
       content = m('main.container', [
         m('h1', [

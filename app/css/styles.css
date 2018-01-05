@@ -114,9 +114,19 @@ dl {
   -webkit-margin-after: 0;
 }
 
+dl dt {
+  margin: 0;
+  float: left;
+  width: 35%;
+}
+
 dl dd {
-  margin-top: -1rem;
-  float: right;
+  margin: 0;
+  float: left;
+  width: 65%;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 dl dd:last-child {

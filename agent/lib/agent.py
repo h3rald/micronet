@@ -174,8 +174,8 @@ class Agent:
         self.logger.info("Scheduling sensors...")
         informer = Informer(data=self.data, id=self.id, conn=self.conn)
         informer_out = SensorAsOutputThing(informer)
-        sensor_output.connect(StdoutConnector(sensor.info))
-        sensor_output.connect(self.conn.writer(k, sensor.info, topic='micronet/devices/' + self.id + '/online'))
+        informer_out.connect(StdoutConnector(informer.info))
+        informer_out.connect(self.conn.writer('informer', informer.info, topic='micronet/devices/' + self.id + '/online'))
         self.scheduler.schedule_periodic(informer_out, 5)
         for k, v in self.sensors.items():
             id = k.split(':')[0]

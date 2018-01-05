@@ -38,15 +38,14 @@ if sys.implementation.name == 'cpython':
 
     class MQTTConnector:
 
-        def __init__(self, id, topic=None):
+        def __init__(self, id):
             self.id = id;
-            self.topic = topic
             self.logger = Logger()
             self.config = Config()
             self.client = mqtt.Client(client_id=self.id)
 
-        def writer(self, sensor, info):
-            return MQTTConnectorWriter(self, self.id, sensor, info, topic=self.topic)
+        def writer(self, sensor, info, topic=None):
+            return MQTTConnectorWriter(self, self.id, sensor, info, topic=topic)
 
         def connect(self):
             if self.config.get("ssl"):

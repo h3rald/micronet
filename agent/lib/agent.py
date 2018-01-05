@@ -45,7 +45,7 @@ class Informer:
         self.sensor_id = 'informer'
     
     def sample(self):
-        return 'true'
+        return True
 
 class StdoutConnector:
     def __init__(self, info):
@@ -158,7 +158,7 @@ class Agent:
 
     def start(self):
         self.conn.connect()
-        self.conn.publish('micronet/devices/' + self.id + '/online', 'true', retain=True, qos=1)
+        self.conn.publish('micronet/devices/' + self.id + '/online', 'true', retain=True, qos=0)
         self.conn.publish('micronet/devices/' + self.id + '/info', json.dumps(self.data), retain=True, qos=0)
         self.scheduler.run_forever()
 

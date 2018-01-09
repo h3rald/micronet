@@ -18,8 +18,8 @@ export class DeviceComponent {
     this.config = new ConfigService();
     this.ui = new UiService();
     this.device = {};
-    this.knownSensors = ['cpu', 'ram', 'fs', 'bme280', 'dht11'];
-    this.additionalSensors = {};
+    this.dedicatedBlocks = ['cpu', 'ram', 'fs'];
+    this.sensors = {};
     this.load();
   }
 
@@ -112,46 +112,15 @@ export class DeviceComponent {
       })
     });
   }
-
-  dht11(dht) {
-    return this.ui.panel({
-      title: [
-        this.ui.icon('weather-partlycloudy'),
-        'DHT11'
-      ],
-      body: [
-        this.ui.properties({
-          Temperature: dht.find((v) => v.id === 'temperature').valueLabel,
-          Humidity: dht.find((v) => v.id === 'humidity').valueLabel
-        })
-      ]
-    });
-  }
-
-  bme280(bme) {
-    return this.ui.panel({
-      title: [
-        this.ui.icon('weather-partlycloudy'),
-        'BME280'
-      ],
-      body: [
-        this.ui.properties({
-          Temperature: bme.find((v) => v.id === 'temperature').valueLabel,
-          Pressure: bme.find((v) => v.id === 'pressure').valueLabel,
-          Humidity: bme.find((v) => v.id === 'humidity').valueLabel
-        })
-      ]
-    });
-  }
-
-  additional() {
+  
+  sensorList() {
     return this.ui.panel({
       title: [
         this.ui.icon('access-point'),
-        'Other Sensors'
+        'Sensors'
       ],
       body: [
-        this.ui.properties(this.additionalSensors)
+        this.ui.properties(this.sensors)
       ]
     });
   }
@@ -161,22 +130,21 @@ export class DeviceComponent {
     let content = m(LoadingComponent);
     if (!this.loading) {
       const columns = [this.info()];
-      this.knownSensors.forEach((s) => {
+      this.dedicatedBlocks.forEach((s) => {
         if (this.device.sensors[s]) {
           columns.push(this[s](this.device.sensors[s]));
         }
       })
       Object.keys(this.device.sensors).forEach((s) => {
         console.log(s);
-        if (!this.knownSensors.includes(s)) {
+        if (!this.dedicatedBlocks.includes(s)) {
           this.device.sensors[s].forEach((sensor) => {
-            this.additionalSensors[sensor.label] = sensor.valueLabel;
+            this.sensors[sensor.label] = sensor.valueLabel;
           })
         }
       })
-      if (Object.keys(this.additionalSensors).length > 0) {
-        console.log(Object.keys(this.additionalSensors))
-        columns.push(this.additional());
+      if (Object.keys(this.sensors).length > 0) {
+        columns.push(this.sensorList());
       }
       content = m('main.container', [
         m('h1', [

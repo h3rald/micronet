@@ -3,3 +3,4 @@ psutil==5.4.1
 pymata-aio==2.19
 py-cpuinfo==3.3.0
 thingflow==2.3.0
+bluepy==1.1.4

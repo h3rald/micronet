@@ -195,5 +195,6 @@ class Agent:
                 self.logger.info("Sensor '{0}' sampling every {1}s".format(k, v['freq']))
             except Exception as e:
                 self.logger.warning(e)
-                self.logger.warning("Resetting board in 20s.")
-                delayed_reset()
+                if sys.implementation.name == 'micropython':
+                    self.logger.warning("Resetting board in 20s.")
+                    delayed_reset()

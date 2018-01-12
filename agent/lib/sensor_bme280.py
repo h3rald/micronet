@@ -92,7 +92,7 @@ class HumiditySensor:
         self.info = dict(
             id = self.sensor_id,
             type = unit,
-            label='Pressure',
+            label='Humidity',
             uom='%',
             freq = freq
         )

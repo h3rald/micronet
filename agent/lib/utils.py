@@ -19,6 +19,7 @@ else:
     def start_reset():
         utime.sleep(3)
         try:
+            network.disconnect()
             sta = network.WLAN(network.STA_IF)
             ap = network.WLAN(network.AP_IF)
             sta.active(False)

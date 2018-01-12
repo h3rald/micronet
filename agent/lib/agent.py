@@ -97,56 +97,55 @@ class Agent:
 
     def wifi_connect(self):
         self.networks = self.config.get('wifi')
-        if machine.reset_cause() != machine.SOFT_RESET:
-            import network
-            wl = network.WLAN()
-            tuple_wifi_api = True
+        import network
+        wl = network.WLAN()
+        tuple_wifi_api = True
+        try:
+            wl.mode(network.WLAN.STA)
+        except AttributeError:
+            tuple_wifi_api = False
+            sta = network.WLAN(network.STA_IF)
+            ap = network.WLAN(network.AP_IF)
+            sta.active(True)
+            ap.active(False)
+        self.logger.notice("Scanning for known wifi networks...")
+        if tuple_wifi_api:
+            available_nets = wl.scan()
+            nets = frozenset([e.ssid for e in available_nets])
+            known_nets_names = frozenset([key for key in self.networks])
+            net_to_use = list(nets & known_nets_names)
             try:
-                wl.mode(network.WLAN.STA)
-            except AttributeError:
-                tuple_wifi_api = False
-                sta = network.WLAN(network.STA_IF)
-                ap = network.WLAN(network.AP_IF)
-                sta.active(True)
-                ap.active(False)
-            self.logger.notice("Scanning for known wifi networks...")
-            if tuple_wifi_api:
-                available_nets = wl.scan()
-                nets = frozenset([e.ssid for e in available_nets])
-                known_nets_names = frozenset([key for key in self.networks])
-                net_to_use = list(nets & known_nets_names)
-                try:
-                    net_to_use = net_to_use[0]
-                    net_properties = self.networks[net_to_use]
-                    pwd = net_properties['password']
-                    sec = [e.sec for e in available_nets if e.ssid == net_to_use][0]
-                    if 'config' in net_properties:
-                        wl.ifconfig(config=tuple(net_properties['config']))
-                    wl.connect(net_to_use, (sec, pwd), timeout=10000)
-                    while not wl.isconnected():
-                        machine.idle() # save power while waiting
-                    self.logger.notice("Connected to "+net_to_use+" with IP address:" + wl.ifconfig()[0])
-                except Exception as e:
-                    self.logger.warning(e)
-                    self.logger.warning("Failed to connect to any known network. Resetting board in 20s.")
-                    delayed_reset()
-            else:
-                available_nets = wl.scan()
-                nets = frozenset(str(bytearray(e[0]), "utf-8") for e in available_nets)
-                known_nets_names = frozenset([key for key in self.networks])
-                net_to_use = list(nets & known_nets_names)
-                try:
-                    net_to_use = net_to_use[0]
-                    net_properties = self.networks[net_to_use]
-                    pwd = net_properties['password']
-                    wl.connect(net_to_use, pwd)
-                    while not wl.isconnected():
-                        machine.idle() # save power while waiting
-                    self.logger.notice("Connected to "+net_to_use+" with IP address:" + wl.ifconfig()[0])
-                except Exception as e:
-                    self.logger.warning(e)
-                    self.logger.warning("Failed to connect to any known network. Resetting board in 20s.")
-                    delayed_reset()
+                net_to_use = net_to_use[0]
+                net_properties = self.networks[net_to_use]
+                pwd = net_properties['password']
+                sec = [e.sec for e in available_nets if e.ssid == net_to_use][0]
+                if 'config' in net_properties:
+                    wl.ifconfig(config=tuple(net_properties['config']))
+                wl.connect(net_to_use, (sec, pwd), timeout=10000)
+                while not wl.isconnected():
+                    machine.idle() # save power while waiting
+                self.logger.notice("Connected to "+net_to_use+" with IP address:" + wl.ifconfig()[0])
+            except Exception as e:
+                self.logger.warning(e)
+                self.logger.warning("Failed to connect to any known network. Resetting board in 20s.")
+                delayed_reset()
+        else:
+            available_nets = wl.scan()
+            nets = frozenset(str(bytearray(e[0]), "utf-8") for e in available_nets)
+            known_nets_names = frozenset([key for key in self.networks])
+            net_to_use = list(nets & known_nets_names)
+            try:
+                net_to_use = net_to_use[0]
+                net_properties = self.networks[net_to_use]
+                pwd = net_properties['password']
+                wl.connect(net_to_use, pwd)
+                while not wl.isconnected():
+                    machine.idle() # save power while waiting
+                self.logger.notice("Connected to "+net_to_use+" with IP address:" + wl.ifconfig()[0])
+            except Exception as e:
+                self.logger.warning(e)
+                self.logger.warning("Failed to connect to any known network. Resetting board in 20s.")
+                delayed_reset()
     
     def getOsData(self):
         u = uname()

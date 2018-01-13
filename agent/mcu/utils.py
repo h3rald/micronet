@@ -4,6 +4,7 @@ import uio
 import utime
 import machine
 import network
+import ure
 
 def start_reset():
     print('-> Resetting board!')
@@ -40,7 +41,7 @@ class Logger(Singleton):
     LEVEL = 4
 
     for arg in sys.argv:
-        match = re.search("--log:(\d)", arg)
+        match = ure.search("--log:(\d)", arg)
         if match:
             LEVEL = int(match.group(1))
             break;
@@ -87,7 +88,7 @@ class Logger(Singleton):
         def silly(self, *args):
             print(" SILLY:", *args)
 
-class Config(utils.Singleton):
+class Config(Singleton):
 
     __getattr__= dict.__getitem__
 

@@ -5,7 +5,6 @@ import paho.mqtt.client as mqtt
 import json
 import ssl
 from utils import *
-from config import Config
 
 class MQTTConnectorWriter:
 

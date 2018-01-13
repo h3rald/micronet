@@ -1,6 +1,7 @@
 import sys
 import json
 import io
+import re
 
 def to_pascal_case(snake_case_str):
     parts = snake_case_str.split('_')
@@ -64,7 +65,7 @@ class Logger(Singleton):
     if LEVEL > 5:
         def silly(self, *args):
             print(" SILLY:", *args)
-class Config(utils.Singleton):
+class Config(Singleton):
 
     __getattr__= dict.__getitem__
 

@@ -1,6 +1,3 @@
-from utils import cpython_sensor
-cpython_sensor()
-
 from bluepy import btle
 import time
 

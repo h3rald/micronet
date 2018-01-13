@@ -1,3 +1,4 @@
+# From micropython-lib: https://github.com/micropython/micropython-lib/tree/master/umqtt.simple
 import usocket as socket
 import ustruct as struct
 from ubinascii import hexlify

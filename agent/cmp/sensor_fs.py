@@ -1,5 +1,3 @@
-from utils import cpython_sensor
-cpython_sensor()
 import psutil
 
 class FsSensor:

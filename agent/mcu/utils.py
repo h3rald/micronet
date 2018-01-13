@@ -1,38 +1,28 @@
 import sys
+import ujson
+import uio
+import utime
+import machine
+import network
 
-def cpython_sensor():
-    if sys.implementation.name != 'cpython':
-        raise NotImplementedError("CPython is required for this sensor.")
+def start_reset():
+    print('-> Resetting board!')
+    utime.sleep(3)
+    try:
+        network.disconnect()
+        sta = network.WLAN(network.STA_IF)
+        ap = network.WLAN(network.AP_IF)
+        sta.active(False)
+        ap.active(False)
+    except:
+        pass
+    finally:
+        machine.reset()
 
-def upython_sensor():
-    if sys.implementation.name != 'micropython':
-        raise NotImplementedError("MicroPython is required for this sensor.")
-
-if sys.implementation.name == 'cpython':
-    import re
-else:
-    import ure as re
-    import utime
-    import machine
-    import network
-
-    def start_reset():
-        utime.sleep(3)
-        try:
-            network.disconnect()
-            sta = network.WLAN(network.STA_IF)
-            ap = network.WLAN(network.AP_IF)
-            sta.active(False)
-            ap.active(False)
-        except:
-            pass
-        finally:
-            machine.reset()
-
-    def delayed_reset():
-        utime.sleep(17)
-        start_reset()
-
+def delayed_reset():
+    print('-> Resetting board in 10s...')
+    utime.sleep(7)
+    start_reset()
 
 def to_pascal_case(snake_case_str):
     parts = snake_case_str.split('_')
@@ -96,3 +86,22 @@ class Logger(Singleton):
     if LEVEL > 5:
         def silly(self, *args):
             print(" SILLY:", *args)
+
+class Config(utils.Singleton):
+
+    __getattr__= dict.__getitem__
+
+    def __init__(self):
+        f = uio.open('config.json')
+        self._data = ujson.loads(f.read())
+        f.close()
+
+    def get(self, s):
+        path = s.split('.')
+        data = self._data
+        for segment in path:
+            if segment in data:
+                data = data[segment]
+            else:
+                return None
+        return data

@@ -1,36 +1,26 @@
 import sys
-
 from mqtt_connector import MQTTConnector
 from utils import *
-from config import Config
+from thingflow import *
+import ujson
+from os import uname
+import machine
 
-if sys.implementation.name == 'cpython':
-    from os import uname
-    import json
-    import asyncio
-    from thingflow.base import Scheduler, SensorAsOutputThing
-else:
-    from thingflow import *
-    import ujson as json
-    from os import uname, dupterm
-    import machine
+class Resetter:
 
-    class Resetter:
+    def __init__(self, freq=10, max=180):
+        self.freq = freq
+        self.max = max
+        self.value = 0
+        self.logger = Logger()
+        self.sensor_id = 'resetter'
 
-        def __init__(self, freq=10, max=180):
-            self.freq = freq
-            self.max = max
-            self.value = 0
-            self.logger = Logger()
-            self.sensor_id = 'resetter'
-    
-        def sample(self):
-            self.value = self.value + self.freq
-            self.logger.info('-- Board reset scheduled in {}s.'.format(self.max - self.value))
-            if (self.value >= self.max):
-                self.logger.info('Resetting board...')
-                start_reset()
-            return 1
+    def sample(self):
+        self.value = self.value + self.freq
+        self.logger.info('-- Board reset scheduled in {}s.'.format(self.max - self.value))
+        if (self.value >= self.max):
+            start_reset()
+        return 1
 
 class Informer:
     def __init__(self, id="", conn=None, data=None):
@@ -127,7 +117,7 @@ class Agent:
                 self.logger.notice("Connected to "+net_to_use+" with IP address:" + wl.ifconfig()[0])
             except Exception as e:
                 self.logger.warning(e)
-                self.logger.warning("Failed to connect to any known network. Resetting board in 20s.")
+                self.logger.warning("Failed to connect to any known network.")
                 delayed_reset()
         else:
             available_nets = wl.scan()
@@ -144,7 +134,7 @@ class Agent:
                 self.logger.notice("Connected to "+net_to_use+" with IP address:" + wl.ifconfig()[0])
             except Exception as e:
                 self.logger.warning(e)
-                self.logger.warning("Failed to connect to any known network. Resetting board in 20s.")
+                self.logger.warning("Failed to connect to any known network.")
                 delayed_reset()
     
     def getOsData(self):
@@ -158,7 +148,7 @@ class Agent:
     def start(self):
         self.conn.connect()
         self.conn.publish('micronet/devices/' + self.id + '/online', 'true', retain=True, qos=0)
-        self.conn.publish('micronet/devices/' + self.id + '/info', json.dumps(self.data), retain=True, qos=0)
+        self.conn.publish('micronet/devices/' + self.id + '/info', ujson.dumps(self.data), retain=True, qos=0)
         self.scheduler.run_forever()
 
     def schedule_machine_reset(self):
@@ -194,6 +184,4 @@ class Agent:
                 self.logger.info("Sensor '{0}' sampling every {1}s".format(k, v['freq']))
             except Exception as e:
                 self.logger.warning(e)
-                if sys.implementation.name == 'micropython':
-                    self.logger.warning("Resetting board in 20s.")
-                    delayed_reset()
+                delayed_reset()

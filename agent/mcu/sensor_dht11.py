@@ -1,5 +1,3 @@
-from utils import upython_sensor
-upython_sensor()
 from machine import Pin
 from dht import DHT11
 

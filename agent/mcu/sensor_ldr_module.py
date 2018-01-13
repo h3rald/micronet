@@ -1,7 +1,4 @@
-from utils import upython_sensor
-upython_sensor()
 from machine import Pin
-
 
 class LightSensor:
 

@@ -1,5 +1,3 @@
-from utils import upython_sensor
-upython_sensor()
 from bme280 import BME280
 from machine import I2C
 

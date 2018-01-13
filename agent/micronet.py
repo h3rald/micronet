@@ -1,10 +1,9 @@
 import sys
-sys.path.append('lib')
+sys.path.append('cmp')
 
 from agent import Agent
 
 AGENT = Agent()  
-
 AGENT.schedule()
 AGENT.start()
 

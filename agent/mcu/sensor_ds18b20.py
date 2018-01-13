@@ -1,10 +1,7 @@
-from utils import upython_sensor
-upython_sensor()
 from ds18x20 import DS18X20
 from onewire import OneWire
 from time import sleep_ms
 from machine import Pin
-
 
 class TemperatureSensor:
 

@@ -11,7 +11,7 @@ try:
     AGENT.start()
 except Exception as e:
     print('ERROR: An unhandled exception was raised.')
-    print(e)
+    sys.print_exception(e)
     delayed_reset()
 
 while True:

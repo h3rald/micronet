@@ -1,10 +1,11 @@
-import sys
 from mqtt_connector import MQTTConnector
-from utils import *
 from thingflow import *
+import sys
+from utils import *
 import ujson
 from os import uname
 import machine
+import gc
 
 class Resetter:
 
@@ -80,10 +81,7 @@ class Agent:
         self.logger.notice("MicroNet Agent started on %s (%s)" % (self.id, self.type))
         self.conn = MQTTConnector(self.id)
         self.conn.set_last_will('micronet/devices/' + self.id + '/online', 'false')
-        if sys.implementation.name == 'cpython':
-            self.scheduler = Scheduler(asyncio.get_event_loop())
-        else:
-            self.scheduler = Scheduler()
+        self.scheduler = Scheduler()
 
     def wifi_connect(self):
         self.networks = self.config.get('wifi')
@@ -147,8 +145,9 @@ class Agent:
 
     def start(self):
         self.conn.connect()
-        self.conn.publish('micronet/devices/' + self.id + '/online', 'true', retain=True, qos=0)
+        gc.collect()
         self.conn.publish('micronet/devices/' + self.id + '/info', ujson.dumps(self.data), retain=True, qos=0)
+        self.conn.publish('micronet/devices/' + self.id + '/online', 'true', retain=True, qos=0)
         self.scheduler.run_forever()
 
     def schedule_machine_reset(self):

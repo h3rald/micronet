@@ -64,10 +64,7 @@ class Agent:
         self.logger.notice("MicroNet Agent started on %s (%s)" % (self.id, self.type))
         self.conn = MQTTConnector(self.id)
         self.conn.set_last_will('micronet/devices/' + self.id + '/online', 'false')
-        if sys.implementation.name == 'cpython':
-            self.scheduler = Scheduler(asyncio.get_event_loop())
-        else:
-            self.scheduler = Scheduler()
+        self.scheduler = Scheduler(asyncio.get_event_loop())
 
     def getOsData(self):
         u = uname()

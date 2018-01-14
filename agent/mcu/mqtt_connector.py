@@ -1,8 +1,7 @@
 # Based on: https://github.com/mpi-sws-rse/thingflow-python/blob/master/micropython/mqtt_writer.py
 
+import umqtt.simple
 import sys
-import gc
-import umqtt
 import utime
 import ujson
 from utils import *
@@ -26,7 +25,7 @@ class MQTTConnectorWriter:
         self.logger.error("MQTT - Error: %s." %e)
     
 
-class MQTTClient(umqtt.MQTTClient):
+class MQTTClient(umqtt.simple.MQTTClient):
 
     def __init__(self, client_id, server, port=0, user=None, password=None, ssl=False):
         super().__init__(client_id, server, port=port, user=user, password=password, keepalive=0, ssl=ssl)
@@ -39,7 +38,7 @@ class MQTTClient(umqtt.MQTTClient):
         super().connect(clean_session=clean_session)
 
     def reset(self):
-        self.logger.warning('Connection error detected. Resetting board in 20s...')
+        self.logger.warning('Connection error.')
         delayed_reset()
 
     def publish(self, topic, msg, retain=False, qos=0):
@@ -72,6 +71,12 @@ class MQTTConnector:
             user=self.config.get('username'),
             password=self.config.get('password')
         )
+
+    def set_last_will(self, topic, value):
+        self.client.set_last_will(topic, value)
+
+    def publish(self, topic, msg, retain=False, qos=0):
+        self.client.publish(bytes(topic, 'utf-8'), bytes(msg, 'utf-8'), retain, qos)
 
     def writer(self, sensor, info, topic=None):
         return MQTTConnectorWriter(self, self.id, sensor, info, topic=topic)

@@ -14,7 +14,7 @@ export class MicronetService {
       this.messages = [];
       this.connected = false;
       this.wasConnected = false;
-      this.maxMessages = this.config.settings.maxMessages || 100;
+      this.maxMessages = 100;
       instance = this;
     }
     return instance;
@@ -37,9 +37,9 @@ export class MicronetService {
 
   addMessage(msg) {
     if (this.messages.length > this.maxMessages) {
-      this.messages = this.messages.shift();
+      this.messages = this.messages.pop();
     }
-    this.messages.push(msg);
+    this.messages.unshift(msg);
   }
 
   network(){

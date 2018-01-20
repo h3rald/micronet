@@ -6,6 +6,7 @@ import { UiService } from '../services/ui.svc.js';
 import { Message } from '../models/message.js';
 import { UtilsService } from '../services/utils.svc.js';
 import { Mithril as m } from '../../vendor/js/mithril.js';
+import { moment } from '../../vendor/js/moment.js';
 
 export class MessagesComponent {
 
@@ -38,10 +39,14 @@ export class MessagesComponent {
   }
 
   message(msg) {
+    const t = moment(msg.timestamp).format('dddd, MMMM Do YYYY, h:mm:ss a');
     return m('div.msg', [
-      m('span.device', msg.device),
-      m('span.sensor-label', msg.sensor.label),
-      m('span.sensor-value', msg.sensor.valueLabel)
+      m('div.msg-content', [
+        m('span.device', msg.device),
+        m('span.sensor-label', msg.sensor.label),
+        m('span.sensor-value', msg.sensor.valueLabel)
+      ]),
+       m('div.msg-timestamp', t)
     ])
   }
 

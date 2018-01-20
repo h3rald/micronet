@@ -186,5 +186,34 @@ meter.meter {
 }
 
 .msg .device {
+  padding: 0 2px;
+  color: #aaaaaa;
+}
+
+.msg .device::before {
+  content: "[";
+  font-weight: 600;
+}
+
+.msg .device::after {
+  content: "]";
+  font-weight: 600;
+}
+
+.msg .sensor-label {
+  padding: 0 2px;
+}
+
+.msg .sensor-label::after {
+  content: ": ";
+}
+
+.msg .sensor-value {
   padding: 0 3px;
+  font-weight: 600;
+}
+
+.msg-timestamp {
+  font-size: 0.5rem;
+  color: #aaaaaa;
 }

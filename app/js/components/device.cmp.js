@@ -7,6 +7,7 @@ import { UiService } from '../services/ui.svc.js';
 import { UtilsService } from '../services/utils.svc.js';
 import { Device } from '../models/device.js';
 import { Mithril as m } from '../../vendor/js/mithril.js';
+import { moment } from '../../vendor/js/moment.js';
 
 export class DeviceComponent {
 
@@ -42,6 +43,7 @@ export class DeviceComponent {
   }
 
   info() {
+    const update = this.device.timestamp ? moment(this.device.timestamp) : 'n/a';
     return this.ui.panel({
       title: [
         this.ui.icon('information'),
@@ -49,7 +51,8 @@ export class DeviceComponent {
       ],
       body: this.ui.properties({
         Model: this.device.model,
-        Kernel: this.device.osInfo
+        Kernel: this.device.osInfo,
+        'Last Update': update
       }),
       footer: ''
     });

@@ -17,7 +17,6 @@ footer {
   position: fixed;
   bottom: 0px;
   width: 100%;
-  background: #F0F1FA;
   padding-bottom: 20px;
 }
 
@@ -140,4 +139,52 @@ meter.meter {
 .navbar i.typcn {
   font-size: 120%;
   vertical-align: top;
+}
+
+.tab .tab-item a {
+  padding: 0.1rem;
+}
+
+.tab {
+  font-size: 0.7rem;
+}
+
+.app-tabs {
+  background: #fefefe;
+  border-top: 1px solid #eeeeee;
+}
+
+.app-tab {
+  cursor: pointer;
+  padding: 3px;
+  font-weight: 200;
+}
+
+.app-tab.selected {
+  color: #2e5bec;
+  font-weight: 600;
+}
+
+.app-tab-icon {
+  font-size: 1rem;
+  text-align:center;
+  width: 100%;
+}
+
+.selected .app-tab-icon {
+  font-weight: 600;
+}
+
+.app-tab-text {
+  font-size: 11px;
+  text-align:center;
+  width: 100%;
+}
+
+.msg {
+  font-size: 0.7rem;  
+}
+
+.msg .device {
+  padding: 0 3px;
 }

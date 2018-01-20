@@ -11,8 +11,10 @@ export class MicronetService {
       this.config = new ConfigService();
       this.onMessageArrived = this.onMessage;
       this.data = null;
+      this.messages = [];
       this.connected = false;
       this.wasConnected = false;
+      this.maxMessages = this.config.settings.maxMessages || 100;
       instance = this;
     }
     return instance;
@@ -31,6 +33,13 @@ export class MicronetService {
     }).catch((data) => {
       this.onConnectionFailure(data);
     })
+  }
+
+  addMessage(msg) {
+    if (this.messages.length > this.maxMessages) {
+      this.messages = this.messages.shift();
+    }
+    this.messages.push(msg);
   }
 
   network(){
@@ -83,6 +92,12 @@ export class MicronetService {
     const value = JSON.parse(msg.payloadString);
     this._setProperty(topic, value);
     this.data.timestamp = Date.now();
+    if (topic.match(/^devices/) && !msg.retained) {
+      const device = topic.split('/')[1];
+      this._setProperty(`devices/${device}/timestamp`, this.data.timestamp);
+      msg.timestamp = this.data.timestamp;
+      this.addMessage(msg);
+    }
     m.redraw();
   }
 

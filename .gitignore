@@ -5,3 +5,4 @@ agent/dist/
 agent/micronet.egg-info/
 agent/**/*.mpy
 app/localStorage.json
+app/settings.json

@@ -1,4 +1,5 @@
 import { UtilsService } from '../services/utils.svc.js';
+import { ConfigService } from '../services/config.svc.js';
 import { Sensor } from '../models/sensor.js';
 import { RamSensor } from './sensor_ram.js';
 import { CpuSensor } from './sensor_cpu.js';
@@ -13,11 +14,12 @@ export class Device {
       'fs': FsSensor
     };
     this.utils = new UtilsService();
+    this.config = new ConfigService();
     this.p = this.utils.prop;
     this.id = id;
-    this.online = obj.online;
     this.data = obj.data;
     this.info = obj.info;
+    this.timestamp = obj.timestamp || 0;
     this.type = this.p(obj, 'info.type');
     this.model = this.p(obj, 'info.model');
     this.os = this.p(obj, 'info.os');
@@ -49,6 +51,10 @@ export class Device {
       sensorGroups[sensor.type].push(sensor);
     })
     return sensorGroups;
+  }
+
+  get online() {
+    return (Date.now() - this.timestamp) < (this.config.settings.onlineTimeout || 20000);
   }
 
   get icon() {

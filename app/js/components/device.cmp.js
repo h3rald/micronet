@@ -43,7 +43,6 @@ export class DeviceComponent {
   }
 
   info() {
-    const update = this.device.timestamp ? moment(this.device.timestamp) : 'n/a';
     return this.ui.panel({
       title: [
         this.ui.icon('information'),
@@ -51,8 +50,7 @@ export class DeviceComponent {
       ],
       body: this.ui.properties({
         Model: this.device.model,
-        Kernel: this.device.osInfo,
-        'Last Update': update
+        Kernel: this.device.osInfo
       }),
       footer: ''
     });

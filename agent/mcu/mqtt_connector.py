@@ -1,6 +1,6 @@
 # Based on: https://github.com/mpi-sws-rse/thingflow-python/blob/master/micropython/mqtt_writer.py
 
-import umqtt.simple
+import umqtt_simple
 import sys
 import utime
 import ujson
@@ -25,7 +25,7 @@ class MQTTConnectorWriter:
         self.logger.error("MQTT - Error: %s." %e)
     
 
-class MQTTClient(umqtt.simple.MQTTClient):
+class MQTTClient(umqtt_simple.MQTTClient):
 
     def __init__(self, client_id, server, port=0, user=None, password=None, ssl=False):
         super().__init__(client_id, server, port=port, user=user, password=password, keepalive=0, ssl=ssl)

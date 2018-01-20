@@ -5,7 +5,6 @@ from utils import *
 import ujson
 from os import uname
 import machine
-import gc
 
 class Resetter:
 
@@ -47,7 +46,6 @@ class StdoutConnector:
         value = x[2]
         if type(value) == dict:
             data = self.info['data']
-            # Print multiple values, assuming labels and uoms are in info['data']
             for key, val in data.items():
                 self.logger.info("{0} ({1}): {2}{3}".format(val['label'], self.info['id'], value[key], val['uom']))
         else:
@@ -145,7 +143,6 @@ class Agent:
 
     def start(self):
         self.conn.connect()
-        gc.collect()
         self.conn.publish('micronet/devices/' + self.id + '/info', ujson.dumps(self.data), retain=True, qos=0)
         self.conn.publish('micronet/devices/' + self.id + '/online', 'true', retain=True, qos=0)
         self.scheduler.run_forever()

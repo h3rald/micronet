@@ -26,7 +26,7 @@ export class ConnectComponent {
       then(() => {
         this.failure = '';
         this.config.save(this.settings);
-        m.route.set('/network');
+        m.route.set('/home');
       }).catch(() => {
         this.failure = 'Invalid connection settings.';
       });

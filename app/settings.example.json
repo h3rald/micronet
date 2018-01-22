@@ -1,3 +1,29 @@
 {
-  "onlineTimeout": 20000
+  "onlineTimeout": 20000,
+  "homeSensors": [
+    "light",
+    "temperature",
+    "humidity",
+    "pressure"
+],
+  "locations": {
+      "livingroom": {
+          "name": "Living Room",
+          "devices": [
+              "dev1"
+          ]
+      },
+      "entrance": {
+          "name": "Entrance",
+          "devices": [
+              "dev2"
+          ]
+      },
+      "bedroom": {
+          "name": "Bedroom",
+          "devices": [
+              "dev3"
+          ]
+      }
+  }
 }

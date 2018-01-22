@@ -9,6 +9,14 @@ export class FooterComponent {
     this.config = new ConfigService();
     this.tabs = [];
     this.tabs.push({
+      title: 'Home',
+      selected: m.route.get().match(/^\/home/),
+      icon: 'home',
+      callback: () => {
+        m.route.set(`/home`);
+      }
+    });
+    this.tabs.push({
       title: 'Devices',
       selected: m.route.get().match(/^\/network/),
       icon: 'server',

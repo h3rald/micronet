@@ -17,7 +17,7 @@ export class UiService {
   properties(obj) {
     const props = [];
     Object.keys(obj).forEach((key) => {
-      props.push(m('dt', key));
+      props.push(m('dt', m.trust(key)));
       props.push(m('dd', obj[key]));
     });
     return m('dl', props);

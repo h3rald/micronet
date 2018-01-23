@@ -47,7 +47,7 @@ export class HomeComponent {
   location(loc) {
     const sensors = {};
     loc.sensors.forEach((s) => {
-      sensors[s.label] = s.valueLabel;
+      sensors[`<span class="badge ${s.online ? 'online' : 'offline'}">${s.label}</span>`] = s.valueLabel;
     });
     return this.ui.panel({
       title: [

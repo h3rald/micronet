@@ -40,6 +40,7 @@ export class Device {
     }
     const sensors = Object.keys(info).map((id) => {
       const obj = info[id]
+      obj.device = this;
       const constr = this.sensorTypes[obj.type] || Sensor;
       return new constr(obj, this.p(this.rawData, `data.${obj.id}`));
     });

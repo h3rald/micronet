@@ -1,7 +1,7 @@
 import sys
 sys.path.append('mcu')
 from agent import Agent
-from utils import delayed_reset, led
+import utils
 import micropython
 
 try:
@@ -14,8 +14,8 @@ except Exception as e:
     print('ERROR: An unhandled exception was raised.')
     sys.print_exception(e)
     micropython.mem_info(1)
-    led(0x7f0000)
-    delayed_reset()
+    utils.blink(0x7f0000)
+    utils.delayed_reset()
 
 while True:
     pass

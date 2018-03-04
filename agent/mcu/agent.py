@@ -111,6 +111,7 @@ class Agent:
                 while not wl.isconnected():
                     machine.idle() # save power while waiting
                 self.logger.notice("Connected to "+net_to_use+" with IP address:" + wl.ifconfig()[0])
+                blink(0x007f00)
             except Exception as e:
                 self.logger.warning(e)
                 self.logger.warning("Failed to connect to any known network.")
@@ -128,7 +129,7 @@ class Agent:
                 while not wl.isconnected():
                     machine.idle() # save power while waiting
                 self.logger.notice("Connected to "+net_to_use+" with IP address:" + wl.ifconfig()[0])
-                led(0x007f00)
+                blink(0x007f00)
             except Exception as e:
                 self.logger.warning(e)
                 self.logger.warning("Failed to connect to any known network.")

@@ -6,7 +6,18 @@ import machine
 import network
 import ure
 
+try:
+  import pycom
+  pycom.heartbeat(False)
+  def led(color):
+    pycom.rgbled(color) 
+except ImportError:
+  def led(color):
+    pass
+  
+
 def start_reset():
+    led(0x7f7f00)
     print('-> Resetting board!')
     utime.sleep(3)
     try:
